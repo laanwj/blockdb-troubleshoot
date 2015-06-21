@@ -6,6 +6,7 @@ set -e;
     cd py-leveldb/leveldb
     make clean
     make libleveldb.a LDFLAGS='-Bstatic' OPT='-fPIC -O2 -DNDEBUG '
+    make leveldbutil
 )
 
 (
@@ -15,4 +16,5 @@ set -e;
 )
 
 cp py-leveldb/build/lib.*/leveldb.so .
+cp py-leveldb/leveldb/leveldbutil .
 
