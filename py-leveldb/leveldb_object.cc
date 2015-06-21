@@ -4,6 +4,7 @@
 #include "leveldb_ext.h"
 
 #include <leveldb/comparator.h>
+#include <leveldb/filter_policy.h>
 
 static PyObject* PyLevelDBIter_New(PyObject* ref, PyLevelDB* db, leveldb::Iterator* iterator, std::string* bound, int include_value, int is_reverse);
 static PyObject* PyLevelDBSnapshot_New(PyLevelDB* db, const leveldb::Snapshot* snapshot);
@@ -961,6 +962,7 @@ static int PyLevelDB_init(PyLevelDB* self, PyObject* args, PyObject* kwds)
 	self->_options->compression = leveldb::kSnappyCompression;
 	self->_options->block_cache = self->_cache;
 	self->_options->comparator = self->_comparator;
+	self->_options->filter_policy = leveldb::NewBloomFilterPolicy(10);
 	leveldb::Status status;
 
 	// note: copy string parameter, since we might lose it when we release the GIL
