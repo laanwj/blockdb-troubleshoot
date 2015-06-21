@@ -144,6 +144,7 @@ for k,v in db.RangeIter():
         count += 1
         #if count > 100:
         #    break
+print("Block database loaded.")
 
 # sort blocks per file by position
 for fnum,blocks in per_file.iteritems():
