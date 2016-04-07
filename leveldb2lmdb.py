@@ -37,7 +37,7 @@ def main():
     with env.begin(write=True) as txn:
         count = 0
         for x in l.RangeIter():
-            txn.put(x[0], x[1])
+            txn.put(x[0], x[1], append=True)
             if (count % 10000)==0:
                 print('%i' % count, end='\r')
             count += 1
