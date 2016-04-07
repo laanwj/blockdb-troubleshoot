@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # linearize-data.py: Construct a linear, no-fork version of the chain.
 #
@@ -13,7 +13,6 @@ import struct
 import re
 import os
 import base64
-import httplib
 import sys
 import hashlib
 import datetime

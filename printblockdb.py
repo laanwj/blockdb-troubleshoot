@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+from __future__ import print_function, division
 
 import leveldb
 import binascii
@@ -61,7 +62,7 @@ def deser_b128varint(f):
             return n
 def deser_uint256(f):
 	r = 0L
-	for i in xrange(8):
+	for i in range(8):
 		t = struct.unpack("<I", f.read(4))[0]
 		r += t << (i * 32)
 	return r
@@ -147,7 +148,7 @@ for k,v in db.RangeIter():
 print("Block database loaded.")
 
 # sort blocks per file by position
-for fnum,blocks in per_file.iteritems():
+for fnum,blocks in per_file.items():
     blocks.sort(key=attrgetter('nDataPos'))
 filenums = sorted(per_file.keys())
 

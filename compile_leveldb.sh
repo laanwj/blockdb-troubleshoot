@@ -12,9 +12,9 @@ set -e;
 (
     cd py-leveldb
     rm -rf build
-    python setup.py build
+    python3 setup.py build
 )
 
-cp py-leveldb/build/lib.*/leveldb.so .
-cp py-leveldb/leveldb/leveldbutil .
+ln -sf py-leveldb/build/lib.*/leveldb.*.so .
+ln -sf py-leveldb/leveldb/leveldbutil .
 
