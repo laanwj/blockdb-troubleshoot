@@ -11,3 +11,11 @@ due to, for example, different compression settings or version drift.
 dependencies
 -------------
 apt-get install python3-setuptools
+
+lmdb
+------
+EXPERIMENTAL
+
+Run `./compile_lmdb.sh` to build the `lmdb` module.
+This will use py-lmdb's internal `lmdb` module, not the system `lmdb` (if any).
+

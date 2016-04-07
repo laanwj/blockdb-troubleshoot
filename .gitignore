@@ -1,4 +1,5 @@
-leveldb.so
+leveldb.*.so
 py-leveldb/build
 leveldbutil
+lmdb
 

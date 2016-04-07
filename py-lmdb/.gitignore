@@ -1,0 +1,12 @@
+MANIFEST
+__pycache__
+build
+dist
+docs/_build
+ll.sh
+lmdb.egg-info
+lmdb/_config.py
+lo.sh
+old
+.tox/
+tests/test.py
