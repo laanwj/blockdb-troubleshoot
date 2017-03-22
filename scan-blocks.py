@@ -1,13 +1,7 @@
 #!/usr/bin/python3
-#
-# linearize-data.py: Construct a linear, no-fork version of the chain.
-#
-# Copyright (c) 2013-2014 The Bitcoin Core developers
-# Distributed under the MIT software license, see the accompanying
-# file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#
-
-from __future__ import print_function, division
+'''
+Scan a block file for block headers and extents, find overlapping extents.
+'''
 import json
 import struct
 import re
@@ -17,13 +11,14 @@ import sys
 import hashlib
 import datetime
 import time
+import binascii
 from collections import namedtuple
 
 settings = {}
 MAX_BLOCK_SIZE = 1024*1024
 
 def uint32(x):
-    return x & 0xffffffffL
+    return x & 0xffffffff
 
 def bytereverse(x):
     return uint32(( ((x) << 24) | (((x) << 8) & 0x00ff0000) |
@@ -34,14 +29,14 @@ def bufreverse(in_buf):
     for i in range(0, len(in_buf), 4):
         word = struct.unpack('@I', in_buf[i:i+4])[0]
         out_words.append(struct.pack('@I', bytereverse(word)))
-    return ''.join(out_words)
+    return b''.join(out_words)
 
 def wordreverse(in_buf):
     out_words = []
     for i in range(0, len(in_buf), 4):
         out_words.append(in_buf[i:i+4])
     out_words.reverse()
-    return ''.join(out_words)
+    return b''.join(out_words)
 
 def calc_hdr_hash(blk_hdr):
     hash1 = hashlib.sha256()
@@ -58,7 +53,7 @@ def calc_hash_str(blk_hdr):
     hash = calc_hdr_hash(blk_hdr)
     hash = bufreverse(hash)
     hash = wordreverse(hash)
-    hash_str = hash.encode('hex')
+    hash_str = binascii.b2a_hex(hash).decode()
     return hash_str
 
 def get_block_hashes(settings):
@@ -111,13 +106,13 @@ def run(fname, settings, blkmap):
         warning = ''
         if last_end is not None:
             if ptr < last_end:
-                warning = 'Overlap with last block (%08x,%08x)' %(last_start, last_end)
+                warning = 'Overlap with last block (0x%08x,0x%08x)' %(last_start, last_end)
             elif ptr != last_end:
-                warning = 'Block doesn\'t start at expected position %08x' % (data_end)
+                warning = 'Block doesn\'t start at expected position 0x%08x' % (data_end)
 
         blknum = blkmap.get(hash_str,-1)
         #if warning or blknum == -1:
-        print('%08x-%08x %08x %s %6d %s' % (ptr, data_end, ptr+8, hash_str,blknum, warning))
+        print('0x%08x-0x%08x %s %6d %s' % (ptr, data_end, hash_str,blknum, warning))
 
         last_start = ptr
         last_end = data_end
@@ -127,7 +122,7 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print("Usage: list-blocks.py blkXXX.dat")
         sys.exit(1)
-    settings['netmagic'] = 'f9beb4d9'.decode('hex')
+    settings['netmagic'] = binascii.a2b_hex('f9beb4d9')
     settings['hashlist'] = 'hashes.txt'
     blkindex = get_block_hashes(settings)
     blkmap = mkblockmap(blkindex)
