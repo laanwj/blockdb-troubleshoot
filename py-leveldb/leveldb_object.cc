@@ -636,6 +636,13 @@ static PyObject* PyLevelDB_RangeIter_(PyLevelDB* self, const leveldb::Snapshot* 
 	if (iter == 0)
 		return PyErr_NoMemory();
 
+        // raise error if iter has invalid status
+	leveldb::Status status = iter->status();
+	if (!status.ok()) {
+		PyLevelDB_set_error(status);
+		return 0;
+	}
+
 	// if iterator is empty, return an empty iterator object
 	if (!iter->Valid()) {
 		Py_BEGIN_ALLOW_THREADS
@@ -1350,6 +1357,14 @@ static PyObject* PyLevelDBIter_next(PyLevelDBIter* iter)
 	} else {
 		iter->iterator->Next();
 	}
+
+        // raise error if iter has invalid status
+	leveldb::Status status = iter->iterator->status();
+	if (!status.ok()) {
+		PyLevelDB_set_error(status);
+		return 0;
+	}
+
 	// return k/v pair or single key
 	return ret;
 }

@@ -20,12 +20,12 @@ void BlockHandle::EncodeTo(std::string* dst) const {
   PutVarint64(dst, size_);
 }
 
-Status BlockHandle::DecodeFrom(Slice* input) {
+Status BlockHandle::DecodeFrom(Slice* input, const std::string &fname) {
   if (GetVarint64(input, &offset_) &&
       GetVarint64(input, &size_)) {
     return Status::OK();
   } else {
-    return Status::Corruption("bad block handle");
+    return Status::Corruption("bad block handle", fname);
   }
 }
 
@@ -40,19 +40,19 @@ void Footer::EncodeTo(std::string* dst) const {
   (void)original_size;  // Disable unused variable warning.
 }
 
-Status Footer::DecodeFrom(Slice* input) {
+Status Footer::DecodeFrom(Slice* input, const std::string &fname) {
   const char* magic_ptr = input->data() + kEncodedLength - 8;
   const uint32_t magic_lo = DecodeFixed32(magic_ptr);
   const uint32_t magic_hi = DecodeFixed32(magic_ptr + 4);
   const uint64_t magic = ((static_cast<uint64_t>(magic_hi) << 32) |
                           (static_cast<uint64_t>(magic_lo)));
   if (magic != kTableMagicNumber) {
-    return Status::Corruption("not an sstable (bad magic number)");
+    return Status::Corruption("not an sstable (bad magic number)", fname);
   }
 
-  Status result = metaindex_handle_.DecodeFrom(input);
+  Status result = metaindex_handle_.DecodeFrom(input, fname);
   if (result.ok()) {
-    result = index_handle_.DecodeFrom(input);
+    result = index_handle_.DecodeFrom(input, fname);
   }
   if (result.ok()) {
     // We skip over any leftover data (just padding for now) in "input"

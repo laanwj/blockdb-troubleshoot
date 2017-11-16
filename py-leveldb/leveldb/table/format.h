@@ -32,7 +32,7 @@ class BlockHandle {
   void set_size(uint64_t size) { size_ = size; }
 
   void EncodeTo(std::string* dst) const;
-  Status DecodeFrom(Slice* input);
+  Status DecodeFrom(Slice* input, const std::string &fname);
 
   // Maximum encoding length of a BlockHandle
   enum { kMaxEncodedLength = 10 + 10 };
@@ -61,7 +61,7 @@ class Footer {
   }
 
   void EncodeTo(std::string* dst) const;
-  Status DecodeFrom(Slice* input);
+  Status DecodeFrom(Slice* input, const std::string &fname);
 
   // Encoded length of a Footer.  Note that the serialization of a
   // Footer will always occupy exactly this many bytes.  It consists

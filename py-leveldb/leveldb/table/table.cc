@@ -41,7 +41,7 @@ Status Table::Open(const Options& options,
                    Table** table) {
   *table = NULL;
   if (size < Footer::kEncodedLength) {
-    return Status::Corruption("file is too short to be an sstable");
+    return Status::Corruption("file is too short to be an sstable", file->GetName());
   }
 
   char footer_space[Footer::kEncodedLength];
@@ -51,7 +51,7 @@ Status Table::Open(const Options& options,
   if (!s.ok()) return s;
 
   Footer footer;
-  s = footer.DecodeFrom(&footer_input);
+  s = footer.DecodeFrom(&footer_input, file->GetName());
   if (!s.ok()) return s;
 
   // Read the index block
@@ -120,7 +120,7 @@ void Table::ReadMeta(const Footer& footer) {
 void Table::ReadFilter(const Slice& filter_handle_value) {
   Slice v = filter_handle_value;
   BlockHandle filter_handle;
-  if (!filter_handle.DecodeFrom(&v).ok()) {
+  if (!filter_handle.DecodeFrom(&v, rep_->file->GetName()).ok()) {
     return;
   }
 
@@ -171,7 +171,7 @@ Iterator* Table::BlockReader(void* arg,
 
   BlockHandle handle;
   Slice input = index_value;
-  Status s = handle.DecodeFrom(&input);
+  Status s = handle.DecodeFrom(&input, "");
   // We intentionally allow extra stuff in index_value so that we
   // can add more features in the future.
 
@@ -234,7 +234,7 @@ Status Table::InternalGet(const ReadOptions& options, const Slice& k,
     FilterBlockReader* filter = rep_->filter;
     BlockHandle handle;
     if (filter != NULL &&
-        handle.DecodeFrom(&handle_value).ok() &&
+        handle.DecodeFrom(&handle_value, rep_->file->GetName()).ok() &&
         !filter->KeyMayMatch(handle.offset(), k)) {
       // Not found
     } else {
@@ -263,7 +263,7 @@ uint64_t Table::ApproximateOffsetOf(const Slice& key) const {
   if (index_iter->Valid()) {
     BlockHandle handle;
     Slice input = index_iter->value();
-    Status s = handle.DecodeFrom(&input);
+    Status s = handle.DecodeFrom(&input, rep_->file->GetName());
     if (s.ok()) {
       result = handle.offset();
     } else {
