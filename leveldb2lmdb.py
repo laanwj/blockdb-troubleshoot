@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 '''Convert leveldb database to lmdb'''
 import argparse
 import leveldb, lmdb

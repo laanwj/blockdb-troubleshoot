@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 '''
 Simple iteration+lookup check of databases.
 Should reproduce failures in case of corruption.
